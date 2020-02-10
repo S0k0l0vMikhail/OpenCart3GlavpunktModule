@@ -1,0 +1,71 @@
+<div class="clickCheck">
+    <a 
+        id="glavpunkt_open_map"  
+        href="#" 
+        onclick="glavpunkt.openMap(selectPunkt, {{ city }} ); return false;" 
+        style="color: #232323; font-size: 15px; font-weight: 600;" 
+        class="custom_style_for_glavpunkt">
+        {{ text_description }}
+    </a>
+    <p class="glavpunkt_pvz_info"></p>
+</div>
+<script type="text/javascript">
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://glavpunkt.ru/js/punkts-widget/glavpunkt.js';
+    document.head.appendChild(script);                    
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = '.glavpunkt_container{ z-index:2000!important; }';
+    document.head.appendChild(style);   
+
+    function selectPunkt(punktInfo) {
+        $("input:radio[value='glavpunkt.glavpunkt']").prop("checked", true);
+             console.table(punktInfo);
+                $.ajax({
+                    url: 'index.php?route=extension/shipping/glavpunkt/setprice',
+                    type: 'post',
+                    data: {
+                        id:punktInfo.id,
+                        city_to:punktInfo.city,
+                        punktInfo:punktInfo
+                    },
+                    dataType: 'json',
+                    success: function(json) {
+
+                        $('#glavpunkt_open_map').css({
+                                            display: "inline-block", 
+                                            padding:"3px", 
+                                            border: "0"
+                                        });
+
+                        $(".glavpunkt_pvz_info").empty();            
+                        $(".glavpunkt_pvz_info").append(json.cityTo);                                   
+                        $(".glavpunkt_pvz_info").append("<br>");                                   
+                        $(".glavpunkt_pvz_info").append(punktInfo.name);                                   
+                        $(".glavpunkt_pvz_info").append("<br>");                                   
+                        $(".glavpunkt_pvz_info").append(punktInfo.phone);                                   
+                        $(".glavpunkt_pvz_info").append("<br>");                                   
+                        $(".glavpunkt_pvz_info").append(json.tarif);                                   
+                        $(".glavpunkt_pvz_info").append("р. <br>");                                   
+                        $(".glavpunkt_pvz_info").append(punktInfo.address);                                   
+                        $(".glavpunkt_pvz_info").append("<br>");                                   
+                        $(".glavpunkt_pvz_info").append(punktInfo.work_time);                                   
+                    }
+                });
+    }; 
+
+    $('#button-shipping-method').on('click', function(){
+            if($("input:radio[value='glavpunkt.glavpunkt']").is(':checked')){
+                if($(".glavpunkt_pvz_info").is(':empty')){
+                    console.log('empty');
+                    $('#glavpunkt_open_map').css({
+                                    display: "inline-block", 
+                                    padding:"3px", 
+                                    border: "2px solid red"
+                    });
+                    return false;
+                }
+            };
+        });         
+</script>
